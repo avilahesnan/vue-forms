@@ -17,7 +17,7 @@
 
           <h3>Preencha abaixo</h3>
 
-          <form>
+          <form @submit.prevent="enviar" @reset="resetar">
 
             <div class="form-group">
               <label>Nome:</label>
@@ -72,8 +72,14 @@
 
             <div class="form-group">
               <label>Ocupação:</label>
-              <select class="form-control" placeholder="Seu email">
-                <option>Selecione uma opção...</option>
+              <select class="form-control" v-model="dev.ocupacao">
+                <option value="" disabled>Selecione uma opção...</option>
+                <option 
+                  v-for="(ocupacao, index) in ocupacoes"
+                  :key="index"
+                  :value="ocupacao">
+                  {{ ocupacao }}
+                </option>
               </select>
             </div>  
 
@@ -82,22 +88,38 @@
               <p>Tecnologias:</p>
 
               <div class="form-check form-check-inline">
-                <input type="checkbox" class="form-check-input" value="JavaScript">
+                <input 
+                  type="checkbox"
+                  class="form-check-input"
+                  value="JavaScript"
+                  v-model="dev.tecnologias">
                 <label class="form-check-label">JavaScript</label>
               </div>
 
-              <div class="form-check form-check-inline" value="Vue JS">
-                <input type="checkbox" class="form-check-input">
+              <div class="form-check form-check-inline">
+                <input 
+                  type="checkbox"
+                  class="form-check-input"
+                  value="Vue JS"
+                  v-model="dev.tecnologias">
                 <label class="form-check-label">Vue JS</label>
               </div>
 
               <div class="form-check form-check-inline">
-                <input type="checkbox" class="form-check-input" value="Vuex">
+                <input 
+                  type="checkbox"
+                  class="form-check-input"
+                  value="Vuex"
+                  v-model="dev.tecnologias">
                 <label class="form-check-label">Vuex</label>
               </div>
 
               <div class="form-check form-check-inline">
-                <input type="checkbox" class="form-check-input" value="Vue Router">
+                <input 
+                  type="checkbox"
+                  class="form-check-input"
+                  value="Vue Router"
+                  v-model="dev.tecnologias">
                 <label class="form-check-label">Vue Router</label>
               </div>
 
@@ -112,19 +134,31 @@
             </div>
 
             <div class="form-group">
+              <AppRange 
+                label="Salário pretendido:"
+                v-model.number="dev.salario"
+                min="1000"
+                max="15000"
+                step="500"
+                :inputClasses="{'form-range': true }"/>
+            </div>
+
+            <div class="form-group">
 
               <div class="form-check form-check-inline">
                 <input 
                   type="checkbox"
                   class="form-check-input"
-                  v-model="dev.notificacoes">
+                  v-model="dev.notificacoes"
+                  true-value="Sim"
+                  false-value="Não">
                 <label class="form-check-label">Receber notificações por email</label>
               </div>
 
             </div>
 
-            <button class="btn btn-secondary">Resetar</button>
-            <button class="btn btn-success">Enviar</button>
+            <button class="btn btn-secondary" type="reset">Resetar</button>
+            <button class="btn btn-success" type="submit">Enviar</button>
 
           </form>
 
@@ -144,12 +178,18 @@
               <li class="list-group-item"><strong>Email:</strong> {{ dev.email }}</li>
               <li class="list-group-item"><strong>Idade:</strong> {{ dev.idade }}</li>
               <li class="list-group-item"><strong>Gênero:</strong> {{ dev.genero }}</li>
-              <li class="list-group-item"><strong>Ocupação:</strong> </li>
-              <li class="list-group-item"><strong>Tecnologias:</strong> </li>
+              <li class="list-group-item"><strong>Ocupação:</strong> {{ dev.ocupacao }}</li>
+              <li class="list-group-item"><strong>Tecnologias:</strong> 
+                <ul v-for="(tecnologia, index) in dev.tecnologias"
+                  :key="index">
+                  <li>{{ tecnologia }}</li>
+                </ul>
+              </li>
               <li class="list-group-item"><strong>Biografia:</strong> 
                 <div style="white-space: pre">{{ dev.biografia }}</div>
               </li>
-              <li class="list-group-item"><strong>Receber notificações?</strong> {{ dev.notificacoes ? 'Sim' : 'Não' }} </li>
+              <li class="list-group-item"><strong>Salário pretendido: </strong> {{ dev.salario }} </li>
+              <li class="list-group-item"><strong>Receber notificações?</strong> {{ dev.notificacoes }} </li>
             </ul>
 
             <div class="card-header">Model</div>
@@ -170,18 +210,52 @@
 </template>
 
 <script>
+
+import AppRange from './components/AppRange.vue'
+
 export default {
+  components: {
+    AppRange
+  },
   data () {
     return {
-      dev: {
+      dev: {},
+      default: {
         nome: '',
         email: '',
         idade: 24,
         biografia: 'Sou desenvolvedor desde 2023...',
         genero: 'Masculino',
-        notificacoes: false
-      }
+        ocupacao: '',
+        tecnologias: [],
+        notificacoes: 'Não',
+        salario: 1000
+      },
+      ocupacoes: [
+        'Desenvolvedor Front-End (Web)',
+        'Desenvolvedor Front-End (Mobile)',
+        'Desenvolvedor Front-End (Web e Mobile)',
+        'Desenvolvedor Back-End',
+        'Desenvolvedor Full-Stack',
+      ]
     }
+  },
+  methods: {
+    enviar () {
+      const formEnviado = Object.assign({}, this.dev)
+      console.log('Formulário enviado', formEnviado)
+    },
+    resetar () {
+      this.dev = Object.assign({}, this.default)
+    }
+  },
+  created () {
+    this.resetar()
+    console.log('Created')
+  },
+  activated () {
+    this.resetar()
+    console.log('Activated')
   }
 }
 </script>
